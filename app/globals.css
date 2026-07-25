@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-top: #e7f0ea;
+  --bg-bottom: #f4efe6;
+  --ink: #1c2b22;
+  --muted: #5a6b60;
+  --accent: #2f6b4f;
+  --accent-deep: #1e4634;
+  --surface: rgba(255, 252, 247, 0.78);
+  --line: rgba(28, 43, 34, 0.12);
+  --warm: #c4693a;
+  --shadow: 0 18px 50px rgba(30, 70, 52, 0.12);
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-manrope);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-bottom);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #d7ebe0 0%, transparent 55%),
+    radial-gradient(900px 500px at 95% 0%, #f3e2cf 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: radial-gradient(
+    rgba(28, 43, 34, 0.08) 0.7px,
+    transparent 0.7px
+  );
+  background-size: 18px 18px;
+  mask-image: linear-gradient(180deg, black, transparent 85%);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseSoft {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 0.85s linear infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 1.4s ease-in-out infinite;
+}
+
+.animate-rise {
+  animation: riseIn 0.55s ease-out both;
+}
+
+.animate-fade {
+  animation: fadeIn 0.4s ease-out both;
 }
