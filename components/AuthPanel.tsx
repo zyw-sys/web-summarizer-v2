@@ -26,6 +26,7 @@ export type LoginLogItem = {
 type Props = {
   onAuthChange: (user: AuthUser | null) => void;
   onReady?: () => void;
+  variant?: "default" | "hero" | "compact";
 };
 
 const EVENT_LABEL: Record<string, string> = {
@@ -35,7 +36,11 @@ const EVENT_LABEL: Record<string, string> = {
   login_failed: "登录失败",
 };
 
-export default function AuthPanel({ onAuthChange, onReady }: Props) {
+export default function AuthPanel({
+  onAuthChange,
+  onReady,
+  variant = "default",
+}: Props) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [logs, setLogs] = useState<LoginLogItem[]>([]);
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -105,34 +110,24 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
 
   if (booting) {
     return (
-      <section
-        className="rounded-2xl px-5 py-4 text-sm text-[var(--muted)]"
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--line)",
-        }}
-      >
+      <div className="text-sm text-[var(--muted)]">
         正在读取登录状态…
-      </section>
+      </div>
     );
   }
 
   if (user) {
     return (
-      <section
-        className="animate-rise rounded-2xl p-5"
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--line)",
-          boxShadow: "var(--shadow)",
-        }}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm text-[var(--muted)]">当前用户</p>
+      <section className={variant === "compact" ? "" : "animate-rise panel p-5"}>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            {variant !== "compact" && (
+              <p className="text-sm text-[var(--muted)]">当前用户</p>
+            )}
             <p
-              className="mt-1 text-2xl tracking-tight"
-              style={{ fontFamily: "var(--font-display), serif" }}
+              className={`truncate tracking-tight ${
+                variant === "compact" ? "text-base font-semibold" : "display mt-1 text-2xl"
+              }`}
             >
               {user.username}
               {user.role === "admin" && (
@@ -140,31 +135,26 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
                   className="ml-2 align-middle text-xs font-semibold"
                   style={{ color: "var(--accent)" }}
                 >
-                  超级管理员
+                  管理员
                 </span>
               )}
             </p>
-            <p className="mt-1 text-xs text-[var(--muted)]">
-              饮食日记与目标已按账号区分，保存在 SQLite
-            </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
             {user.role === "admin" && (
               <>
                 <Link
                   href="/admin"
-                  className="rounded-xl px-3 py-2 text-xs font-semibold text-white"
-                  style={{ background: "var(--accent)" }}
+                  className="btn-primary px-3 py-2 text-xs"
                 >
                   监察台
                 </Link>
                 <button
                   type="button"
                   onClick={() => setShowLogs((v) => !v)}
-                  className="rounded-xl px-3 py-2 text-xs font-semibold"
-                  style={{ border: "1px solid var(--line)" }}
+                  className="btn-ghost px-3 py-2 text-xs"
                 >
-                  {showLogs ? "收起记录" : "登录记录"}
+                  {showLogs ? "收起" : "记录"}
                 </button>
               </>
             )}
@@ -172,8 +162,7 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
               type="button"
               disabled={loading}
               onClick={handleLogout}
-              className="rounded-xl px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
-              style={{ background: "var(--accent-deep)" }}
+              className="btn-ghost px-3 py-2 text-xs disabled:opacity-50"
             >
               退出
             </button>
@@ -182,12 +171,7 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
 
         {user.role === "admin" && showLogs && (
           <div className="mt-4 border-t border-[var(--line)] pt-4">
-            <p
-              className="mb-3 text-sm tracking-tight"
-              style={{ fontFamily: "var(--font-display), serif" }}
-            >
-              最近登录记录
-            </p>
+            <p className="display mb-3 text-sm tracking-tight">最近登录记录</p>
             {logs.length === 0 ? (
               <p className="text-sm text-[var(--muted)]">暂无记录</p>
             ) : (
@@ -196,7 +180,7 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
                   <li
                     key={log.id}
                     className="rounded-xl px-3 py-2.5 text-xs"
-                    style={{ background: "rgba(28,43,34,0.04)" }}
+                    style={{ background: "rgba(20,32,27,0.04)" }}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold">
@@ -211,11 +195,6 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
                       {log.message || "—"}
                       {log.ip ? ` · IP ${log.ip}` : ""}
                     </p>
-                    {log.sessionId && (
-                      <p className="mt-1 truncate text-[10px] text-[var(--muted)]">
-                        会话：{log.sessionId}
-                      </p>
-                    )}
                   </li>
                 ))}
               </ul>
@@ -226,25 +205,31 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
     );
   }
 
+  const isHero = variant === "hero";
+
   return (
     <section
-      className="animate-rise rounded-2xl p-5"
-      style={{
-        background: "var(--surface)",
-        border: "1px solid var(--line)",
-        boxShadow: "var(--shadow)",
-      }}
+      className={`animate-rise ${
+        isHero
+          ? "rounded-[1.4rem] border border-white/20 bg-white/12 p-5 backdrop-blur-md sm:p-6"
+          : "panel p-5"
+      }`}
     >
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <p
-            className="text-lg tracking-tight"
-            style={{ fontFamily: "var(--font-display), serif" }}
+            className={`tracking-tight ${
+              isHero ? "display text-xl text-white" : "display text-lg"
+            }`}
           >
             {mode === "login" ? "登录账号" : "注册账号"}
           </p>
-          <p className="mt-1 text-xs text-[var(--muted)]">
-            登录后可区分用户数据，并记录每次登录
+          <p
+            className={`mt-1 text-xs ${
+              isHero ? "text-white/70" : "text-[var(--muted)]"
+            }`}
+          >
+            登录后按账号保存饮食与目标
           </p>
         </div>
         <button
@@ -254,8 +239,10 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
             setError(null);
             setShowPassword(false);
           }}
-          className="text-xs font-semibold"
-          style={{ color: "var(--accent)" }}
+          className={`text-xs font-semibold ${
+            isHero ? "text-white" : ""
+          }`}
+          style={isHero ? undefined : { color: "var(--accent)" }}
         >
           {mode === "login" ? "去注册" : "去登录"}
         </button>
@@ -267,7 +254,11 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
           onChange={(e) => setUsername(e.target.value)}
           placeholder="用户名"
           autoComplete="username"
-          className="w-full rounded-xl border border-[var(--line)] bg-white/55 px-3 py-2.5 text-sm outline-none"
+          className={`field ${
+            isHero
+              ? "border-white/25 bg-white/90 text-[var(--ink)] placeholder:text-[var(--muted)]"
+              : ""
+          }`}
           required
         />
         <div className="relative">
@@ -279,7 +270,11 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
             autoComplete={
               mode === "login" ? "current-password" : "new-password"
             }
-            className="w-full rounded-xl border border-[var(--line)] bg-white/55 px-3 py-2.5 pr-11 text-sm outline-none"
+            className={`field pr-11 ${
+              isHero
+                ? "border-white/25 bg-white/90 text-[var(--ink)] placeholder:text-[var(--muted)]"
+                : ""
+            }`}
             required
           />
           <button
@@ -293,17 +288,22 @@ export default function AuthPanel({ onAuthChange, onReady }: Props) {
           </button>
         </div>
         {error && (
-          <p className="text-xs" style={{ color: "var(--warm)" }}>
+          <p
+            className="text-xs"
+            style={{ color: isHero ? "#ffd7b0" : "var(--warn)" }}
+          >
             {error}
           </p>
         )}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
-          style={{ background: "var(--accent-deep)" }}
+          className={`btn-primary w-full px-4 py-3 text-sm ${
+            isHero ? "bg-white text-[var(--accent-deep)] hover:brightness-100" : ""
+          }`}
+          style={isHero ? { background: "#fff", color: "var(--accent-deep)" } : undefined}
         >
-          {loading ? "处理中…" : mode === "login" ? "登录" : "注册并登录"}
+          {loading ? "处理中…" : mode === "login" ? "进入卡知" : "注册并登录"}
         </button>
       </form>
     </section>

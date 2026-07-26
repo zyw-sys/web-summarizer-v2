@@ -1,6 +1,12 @@
 "use client";
 
-import { FormEvent, type ReactNode, useEffect, useState } from "react";
+import {
+  FormEvent,
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { loadDailyGoal, saveDailyGoal } from "@/lib/goalStorage";
 import { summarizeMeals } from "@/lib/mealLog";
 import { ACTIVITY_LABELS, calculateGoalKcal } from "@/lib/tdee";
@@ -12,9 +18,6 @@ type Props = {
   exerciseBurned?: number;
   onGoalChange?: (goal: DailyGoalProfile) => void;
 };
-
-const fieldClass =
-  "w-full rounded-xl border border-[var(--line)] bg-white/55 px-3 py-2.5 text-sm outline-none";
 
 export default function DailyGoalCard({
   meals,
@@ -73,6 +76,7 @@ export default function DailyGoalCard({
     (netIntake / Math.max(profile.goalKcal, 1)) * 100,
   );
   const remaining = Math.max(0, profile.goalKcal - netIntake);
+  const over = netIntake > profile.goalKcal;
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -118,73 +122,71 @@ export default function DailyGoalCard({
   }
 
   return (
-    <section
-      className="animate-rise rounded-2xl p-5"
-      style={{
-        background: "var(--surface)",
-        border: "1px solid var(--line)",
-        boxShadow: "var(--shadow)",
-      }}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm text-[var(--muted)]">今日目标</p>
-          <p
-            className="mt-1 text-2xl tracking-tight"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            {netIntake}
-            <span className="text-base text-[var(--muted)]">
-              {" "}
-              / {profile.goalKcal} kcal
-            </span>
-          </p>
-          <p className="mt-1 text-xs text-[var(--muted)]">
-            饮食 {summary.calories} · 运动 -{exerciseBurned} · 还可约{" "}
-            {remaining} kcal
-            {loggedIn ? " · 已同步" : " · 本机临时"}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-xl px-3 py-2 text-xs font-semibold"
-          style={{ border: "1px solid var(--line)" }}
-        >
-          {open ? "收起" : "设置目标"}
-        </button>
-      </div>
-
-      <div
-        className="mt-4 h-2.5 overflow-hidden rounded-full"
-        style={{ background: "rgba(28,43,34,0.08)" }}
-      >
+    <section className="animate-rise panel px-5 py-7 sm:px-8">
+      <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div
-          className="h-full rounded-full transition-all"
-          style={{
-            width: `${progress}%`,
-            background: progress >= 100 ? "var(--warm)" : "var(--accent)",
-          }}
-        />
-      </div>
+          className="calorie-ring shrink-0"
+          style={
+            {
+              "--progress": progress,
+              "--ring-color": over ? "var(--warn)" : "var(--accent)",
+            } as CSSProperties
+          }
+        >
+          <div className="px-3 text-center">
+            <p className="text-[11px] tracking-[0.14em] text-[var(--muted)] uppercase">
+              {over ? "已超出" : "还可摄入"}
+            </p>
+            <p className="display mt-1 text-3xl font-semibold tracking-tight">
+              {over ? netIntake - profile.goalKcal : remaining}
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--muted)]">kcal</p>
+          </div>
+        </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-        <Stat label="蛋白质" value={`${Math.round(summary.protein)} g`} />
-        <Stat label="脂肪" value={`${Math.round(summary.fat)} g`} />
-        <Stat label="碳水" value={`${Math.round(summary.carbs)} g`} />
+        <div className="min-w-0 flex-1 text-center sm:text-left">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm text-[var(--muted)]">今日热量预算</p>
+              <p className="display mt-1 text-3xl tracking-tight sm:text-4xl">
+                {netIntake}
+                <span className="ml-2 text-lg text-[var(--muted)]">
+                  / {profile.goalKcal}
+                </span>
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-[var(--muted)]">
+                饮食 {summary.calories} · 运动 -{exerciseBurned}
+                {loggedIn ? " · 已同步" : " · 本机临时"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="btn-ghost px-3.5 py-2 text-xs"
+            >
+              {open ? "收起" : "设置目标"}
+            </button>
+          </div>
+
+          <div className="mt-5 grid grid-cols-3 gap-3 text-center sm:text-left">
+            <Stat label="蛋白质" value={`${Math.round(summary.protein)} g`} />
+            <Stat label="脂肪" value={`${Math.round(summary.fat)} g`} />
+            <Stat label="碳水" value={`${Math.round(summary.carbs)} g`} />
+          </div>
+        </div>
       </div>
 
       {open && (
         <form
           onSubmit={handleSave}
-          className="mt-5 space-y-3 border-t border-[var(--line)] pt-4"
+          className="mt-6 space-y-3 border-t border-[var(--line)] pt-5"
         >
           <div className="grid grid-cols-2 gap-3">
             <Field label="性别">
               <select
                 name="gender"
                 defaultValue={profile.gender}
-                className={fieldClass}
+                className="field"
               >
                 <option value="male">男</option>
                 <option value="female">女</option>
@@ -197,7 +199,7 @@ export default function DailyGoalCard({
                 min={10}
                 max={100}
                 defaultValue={profile.age}
-                className={fieldClass}
+                className="field"
                 required
               />
             </Field>
@@ -208,7 +210,7 @@ export default function DailyGoalCard({
                 min={100}
                 max={250}
                 defaultValue={profile.heightCm}
-                className={fieldClass}
+                className="field"
                 required
               />
             </Field>
@@ -220,7 +222,7 @@ export default function DailyGoalCard({
                 max={250}
                 step="0.1"
                 defaultValue={profile.weightKg}
-                className={fieldClass}
+                className="field"
                 required
               />
             </Field>
@@ -229,7 +231,7 @@ export default function DailyGoalCard({
             <select
               name="activity"
               defaultValue={profile.activity}
-              className={fieldClass}
+              className="field"
             >
               {Object.entries(ACTIVITY_LABELS).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -239,15 +241,14 @@ export default function DailyGoalCard({
             </select>
           </Field>
           {error && (
-            <p className="text-xs" style={{ color: "var(--warm)" }}>
+            <p className="text-xs" style={{ color: "var(--warn)" }}>
               {error}
             </p>
           )}
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
-            style={{ background: "var(--accent-deep)" }}
+            className="btn-primary w-full px-4 py-3 text-sm"
           >
             {saving ? "保存中…" : "保存并重算目标"}
           </button>
@@ -268,12 +269,9 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="rounded-xl px-2 py-3"
-      style={{ background: "rgba(28,43,34,0.04)" }}
-    >
-      <p className="text-[var(--muted)]">{label}</p>
-      <p className="mt-1 font-semibold">{value}</p>
+    <div>
+      <p className="text-[11px] tracking-wide text-[var(--muted)]">{label}</p>
+      <p className="mt-1 text-sm font-semibold">{value}</p>
     </div>
   );
 }

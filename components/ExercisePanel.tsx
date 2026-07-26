@@ -173,7 +173,7 @@ export default function ExercisePanel({ weightKg, onBurnedChange }: Props) {
           （MET {met}）
         </p>
         {error && (
-          <p className="mt-2 text-xs" style={{ color: "var(--warm)" }}>
+          <p className="mt-2 text-xs" style={{ color: "var(--warn)" }}>
             {error}
           </p>
         )}

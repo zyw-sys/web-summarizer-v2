@@ -230,7 +230,7 @@ export default function AdminDashboard() {
           className="mb-5 rounded-2xl px-4 py-3 text-sm"
           style={{
             background: "rgba(196,105,58,0.1)",
-            color: "var(--warm)",
+            color: "var(--warn)",
             border: "1px solid rgba(196,105,58,0.28)",
           }}
         >

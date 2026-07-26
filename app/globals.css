@@ -1,22 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --bg-top: #e7f0ea;
-  --bg-bottom: #f4efe6;
-  --ink: #1c2b22;
-  --muted: #5a6b60;
-  --accent: #2f6b4f;
-  --accent-deep: #1e4634;
-  --surface: rgba(255, 252, 247, 0.78);
-  --line: rgba(28, 43, 34, 0.12);
-  --warm: #c4693a;
-  --shadow: 0 18px 50px rgba(30, 70, 52, 0.12);
-  --font-display: var(--font-fraunces);
-  --font-body: var(--font-manrope);
+  --bg: #eef2ef;
+  --bg-deep: #e2e8e4;
+  --ink: #14201b;
+  --muted: #5a6a62;
+  --accent: #0f6b56;
+  --accent-deep: #0a4f40;
+  --accent-soft: rgba(15, 107, 86, 0.1);
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-solid: #ffffff;
+  --line: rgba(20, 32, 27, 0.1);
+  --warn: #9a4b1a;
+  --warm: #9a4b1a;
+  --protein: #0f6b56;
+  --fat: #9a6b2f;
+  --carbs: #2f5f7a;
+  --shadow: 0 24px 60px rgba(15, 40, 32, 0.08);
+  --shadow-soft: 0 8px 28px rgba(15, 40, 32, 0.05);
+  --font-display: var(--font-noto-serif);
+  --font-body: var(--font-noto-sans);
+  --radius: 1.25rem;
 }
 
 @theme inline {
-  --color-background: var(--bg-bottom);
+  --color-background: var(--bg);
   --color-foreground: var(--ink);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
@@ -34,11 +42,8 @@ body {
 body {
   margin: 0;
   color: var(--ink);
-  font-family: var(--font-body), system-ui, sans-serif;
-  background:
-    radial-gradient(1200px 600px at 10% -10%, #d7ebe0 0%, transparent 55%),
-    radial-gradient(900px 500px at 95% 0%, #f3e2cf 0%, transparent 50%),
-    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  font-family: var(--font-body), "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
   background-attachment: fixed;
 }
 
@@ -46,14 +51,171 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.35;
-  background-image: radial-gradient(
-    rgba(28, 43, 34, 0.08) 0.7px,
-    transparent 0.7px
-  );
-  background-size: 18px 18px;
-  mask-image: linear-gradient(180deg, black, transparent 85%);
+  background:
+    radial-gradient(900px 520px at 8% -8%, rgba(15, 107, 86, 0.14), transparent 58%),
+    radial-gradient(700px 420px at 96% 4%, rgba(47, 95, 122, 0.1), transparent 52%),
+    linear-gradient(180deg, #f5f7f5 0%, var(--bg) 42%, var(--bg-deep) 100%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.28;
+  background-image:
+    linear-gradient(rgba(20, 32, 27, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 32, 27, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, black, transparent 78%);
+}
+
+.page-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+}
+
+.panel-quiet {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  background: var(--accent-deep);
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-primary:hover:enabled {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+}
+
+.btn-ghost {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-ghost:hover:enabled {
+  background: rgba(20, 32, 27, 0.04);
+}
+
+.field {
+  width: 100%;
+  border-radius: 0.9rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field:focus {
+  border-color: rgba(15, 107, 86, 0.45);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.tab-rail {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--line);
+}
+
+.tab-btn {
+  border-radius: 999px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.tab-btn[data-active="true"] {
+  background: var(--accent-deep);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.display {
+  font-family: var(--font-display), "Noto Serif SC", serif;
+  letter-spacing: -0.02em;
+}
+
+.hero-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 0.35rem);
+  min-height: min(72vh, 640px);
+  isolation: isolate;
+}
+
+.hero-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(10, 36, 28, 0.78) 0%,
+      rgba(10, 36, 28, 0.42) 48%,
+      rgba(10, 36, 28, 0.2) 100%
+    ),
+    url("https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1800&q=80")
+      center/cover no-repeat;
+  transform: scale(1.02);
+  animation: heroDrift 18s ease-in-out infinite alternate;
+}
+
+.hero-stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+.calorie-ring {
+  --progress: 0;
+  width: 11.5rem;
+  height: 11.5rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, var(--surface-solid) 62%, transparent 63%),
+    conic-gradient(
+      var(--ring-color, var(--accent)) calc(var(--progress) * 1%),
+      rgba(20, 32, 27, 0.08) 0
+    );
+  box-shadow: var(--shadow-soft);
+  animation: ringIn 0.8s ease-out both;
 }
 
 @keyframes spin {
@@ -75,7 +237,7 @@ body::before {
 @keyframes riseIn {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -89,6 +251,26 @@ body::before {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes heroDrift {
+  from {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.06) translate3d(-1.5%, -1%, 0);
+  }
+}
+
+@keyframes ringIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -106,4 +288,12 @@ body::before {
 
 .animate-fade {
   animation: fadeIn 0.4s ease-out both;
+}
+
+.animate-rise-delay {
+  animation: riseIn 0.65s ease-out 0.12s both;
+}
+
+.animate-rise-delay-2 {
+  animation: riseIn 0.7s ease-out 0.22s both;
 }

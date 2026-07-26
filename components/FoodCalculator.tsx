@@ -296,58 +296,65 @@ export default function FoodCalculator() {
     : 0;
 
   return (
-    <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-2xl flex-col px-5 py-10 sm:px-8 sm:py-14">
-      <header className="animate-rise mb-8 text-center">
-        <p
-          className="mb-3 text-sm font-semibold tracking-[0.22em] uppercase"
-          style={{ color: "var(--accent)" }}
-        >
-          卡知
-        </p>
-        <h1
-          className="text-4xl leading-tight tracking-tight sm:text-5xl"
-          style={{ fontFamily: "var(--font-display), serif" }}
-        >
-          食物热量助手
-        </h1>
-        <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-[var(--muted)]">
-          {user
-            ? "查热量、看营养、记一日饮食"
-            : "请先登录后使用热量计算功能"}
-        </p>
-      </header>
-
-      <div className="mb-5 space-y-4">
-        <AuthPanel
-          onAuthChange={setUser}
-          onReady={() => setAuthReady(true)}
-        />
-      </div>
+    <div className="page-shell mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 sm:px-8 sm:py-12">
+      {!authReady && (
+        <div className="animate-fade flex min-h-[60vh] flex-col items-center justify-center gap-4 text-sm text-[var(--muted)]">
+          <span
+            className="animate-spin-slow inline-block h-5 w-5 rounded-full border-2 border-[var(--accent)]/25 border-t-[var(--accent)]"
+            aria-hidden
+          />
+          正在准备卡知…
+          <div className="sr-only">
+            <AuthPanel
+              onAuthChange={setUser}
+              onReady={() => setAuthReady(true)}
+            />
+          </div>
+        </div>
+      )}
 
       {authReady && !user && (
-        <section
-          className="animate-rise rounded-2xl px-6 py-10 text-center"
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--line)",
-            boxShadow: "var(--shadow)",
-          }}
-        >
-          <p
-            className="text-2xl tracking-tight"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            小张的卡知
-          </p>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[var(--muted)]">
-            热量查询、图片识别、饮食日记与每日目标仅对已登录用户开放，方便按账号区分数据。
-          </p>
+        <section className="hero-stage animate-rise flex flex-col justify-end px-6 py-8 sm:px-10 sm:py-12">
+          <div className="mb-auto pt-4">
+            <h1 className="display text-6xl leading-none text-white sm:text-7xl">
+              卡知
+            </h1>
+            <p className="animate-rise-delay mt-5 max-w-md text-lg leading-relaxed text-white/88 sm:text-xl">
+              查清每一口，吃得更明白
+            </p>
+            <p className="animate-rise-delay-2 mt-3 max-w-sm text-sm leading-relaxed text-white/65">
+              文字查询 · 拍照识别 · 条码扫描 · 一日热量预算
+            </p>
+          </div>
+          <div className="mt-10 w-full max-w-md">
+            <AuthPanel
+              variant="hero"
+              onAuthChange={setUser}
+              onReady={() => setAuthReady(true)}
+            />
+          </div>
         </section>
       )}
 
       {authReady && user && (
       <>
-      <div className="mb-5 space-y-4">
+      <header className="animate-rise mb-8 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="display text-4xl leading-none tracking-tight sm:text-5xl">
+            卡知
+          </h1>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            查热量、看营养、记一日饮食
+          </p>
+        </div>
+        <AuthPanel
+          variant="compact"
+          onAuthChange={setUser}
+          onReady={() => setAuthReady(true)}
+        />
+      </header>
+
+      <div className="mb-6">
         <DailyGoalCard
           meals={meals}
           loggedIn
@@ -356,13 +363,7 @@ export default function FoodCalculator() {
         />
       </div>
 
-      <div
-        className="animate-rise mb-5 grid grid-cols-3 gap-2 rounded-2xl p-1"
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--line)",
-        }}
-      >
+      <div className="animate-rise tab-rail mb-6 grid-cols-3">
         <ModeButton
           active={featureTab === "food"}
           onClick={() => setFeatureTab("food")}
@@ -394,7 +395,7 @@ export default function FoodCalculator() {
 
       {featureTab === "food" && (
       <>
-      <div className="mb-5">
+      <div className="mb-6">
         <MealDiary
           meals={meals}
           loggedIn
@@ -403,13 +404,7 @@ export default function FoodCalculator() {
         />
       </div>
 
-      <div
-        className="animate-rise mb-5 grid grid-cols-3 gap-2 rounded-2xl p-1"
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--line)",
-        }}
-      >
+      <div className="animate-rise tab-rail mb-5 grid-cols-3">
         <ModeButton
           active={mode === "text"}
           disabled={loading}
@@ -436,7 +431,7 @@ export default function FoodCalculator() {
       {mode === "barcode" ? (
         <BarcodePanel onAddToDiary={addFoodToDiary} />
       ) : mode === "text" ? (
-        <form onSubmit={handleTextSubmit} className="animate-rise space-y-3">
+        <form onSubmit={handleTextSubmit} className="animate-rise space-y-4">
           <div className="flex flex-wrap gap-2">
             {QUICK_FOODS.map((food) => (
               <button
@@ -444,10 +439,12 @@ export default function FoodCalculator() {
                 type="button"
                 disabled={loading}
                 onClick={() => setFoodName(food)}
-                className="rounded-lg px-3 py-1.5 text-xs font-medium transition hover:bg-black/[0.04] disabled:opacity-50"
+                className="rounded-full px-3.5 py-1.5 text-xs font-medium transition disabled:opacity-50"
                 style={{
                   border: "1px solid var(--line)",
-                  background: foodName === food ? "rgba(47,107,79,0.1)" : "var(--surface)",
+                  background:
+                    foodName === food ? "var(--accent-soft)" : "transparent",
+                  color: foodName === food ? "var(--accent-deep)" : "var(--muted)",
                 }}
               >
                 {food}
@@ -455,14 +452,7 @@ export default function FoodCalculator() {
             ))}
           </div>
 
-          <div
-            className="flex flex-col gap-3 rounded-2xl p-3 sm:flex-row sm:items-center"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              boxShadow: "var(--shadow)",
-            }}
-          >
+          <div className="panel flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
             <input
               id="food-name"
               type="text"
@@ -471,13 +461,12 @@ export default function FoodCalculator() {
               placeholder="例如：鸡蛋、苹果、鸡胸肉"
               autoComplete="off"
               disabled={loading}
-              className="min-w-0 flex-1 rounded-xl border-0 bg-transparent px-4 py-3 text-base outline-none placeholder:text-[var(--muted)] disabled:opacity-60"
+              className="min-w-0 flex-1 rounded-full border-0 bg-transparent px-4 py-3 text-base outline-none placeholder:text-[var(--muted)] disabled:opacity-60"
             />
             <button
               type="submit"
               disabled={loading || !foodName.trim()}
-              className="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition enabled:hover:brightness-110 disabled:opacity-50"
-              style={{ background: "var(--accent-deep)" }}
+              className="btn-primary px-6 py-3 text-sm"
             >
               {loading ? (
                 <>
@@ -492,14 +481,7 @@ export default function FoodCalculator() {
         </form>
       ) : (
         <form onSubmit={handleImageSubmit} className="animate-rise">
-          <div
-            className="rounded-2xl p-4"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              boxShadow: "var(--shadow)",
-            }}
-          >
+          <div className="panel p-4">
             <input
               ref={fileInputRef}
               id="food-image"
@@ -513,13 +495,10 @@ export default function FoodCalculator() {
             {!imagePreview ? (
               <label
                 htmlFor="food-image"
-                className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-4 py-10 text-center transition hover:bg-black/[0.02]"
+                className="flex cursor-pointer flex-col items-center justify-center rounded-[1rem] border border-dashed px-4 py-12 text-center transition hover:bg-black/[0.02]"
                 style={{ borderColor: "var(--line)" }}
               >
-                <span
-                  className="text-lg tracking-tight"
-                  style={{ fontFamily: "var(--font-display), serif" }}
-                >
+                <span className="display text-xl tracking-tight">
                   上传食物图片
                 </span>
                 <span className="mt-2 text-sm text-[var(--muted)]">
@@ -532,15 +511,14 @@ export default function FoodCalculator() {
                 <img
                   src={imagePreview}
                   alt="待识别的食物图片"
-                  className="max-h-72 w-full rounded-xl object-cover"
+                  className="max-h-72 w-full rounded-[1rem] object-cover"
                 />
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <button
                     type="button"
                     disabled={loading}
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold"
-                    style={{ border: "1px solid var(--line)" }}
+                    className="btn-ghost flex-1 px-4 py-3 text-sm"
                   >
                     更换图片
                   </button>
@@ -548,16 +526,14 @@ export default function FoodCalculator() {
                     type="button"
                     disabled={loading}
                     onClick={clearImage}
-                    className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-[var(--muted)]"
-                    style={{ border: "1px solid var(--line)" }}
+                    className="btn-ghost flex-1 px-4 py-3 text-sm text-[var(--muted)]"
                   >
                     清除
                   </button>
                   <button
                     type="submit"
                     disabled={loading || !imageFile}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
-                    style={{ background: "var(--accent-deep)" }}
+                    className="btn-primary flex-1 px-4 py-3 text-sm"
                   >
                     {loading ? (
                       <>
@@ -575,14 +551,14 @@ export default function FoodCalculator() {
         </form>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
-        <span>加入餐次：</span>
+      <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+        <span>加入餐次</span>
         {(Object.keys(MEAL_SLOT_LABELS) as MealSlot[]).map((slot) => (
           <button
             key={slot}
             type="button"
             onClick={() => setMealSlot(slot)}
-            className="rounded-lg px-2.5 py-1 font-medium"
+            className="rounded-full px-3 py-1 font-medium transition"
             style={{
               border: "1px solid var(--line)",
               background:
@@ -600,11 +576,11 @@ export default function FoodCalculator() {
 
         {error && !loading && (
           <div
-            className="animate-fade rounded-2xl px-5 py-4 text-sm leading-relaxed"
+            className="animate-fade rounded-[1.25rem] px-5 py-4 text-sm leading-relaxed"
             style={{
-              background: "rgba(196, 105, 58, 0.1)",
-              border: "1px solid rgba(196, 105, 58, 0.28)",
-              color: "var(--warm)",
+              background: "rgba(154, 75, 26, 0.08)",
+              border: "1px solid rgba(154, 75, 26, 0.22)",
+              color: "var(--warn)",
             }}
           >
             {error}
@@ -612,20 +588,10 @@ export default function FoodCalculator() {
         )}
 
         {textResult && !loading && (
-          <div
-            className="animate-rise overflow-hidden rounded-2xl"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              boxShadow: "var(--shadow)",
-            }}
-          >
+          <div className="panel animate-rise overflow-hidden">
             <div className="border-b border-[var(--line)] px-6 py-6 sm:px-8">
               <p className="text-sm text-[var(--muted)]">匹配食品</p>
-              <h2
-                className="mt-1 text-2xl tracking-tight sm:text-3xl"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
+              <h2 className="display mt-1 text-2xl tracking-tight sm:text-3xl">
                 {textResult.name}
               </h2>
               <p className="mt-2 text-xs text-[var(--muted)]">
@@ -636,16 +602,13 @@ export default function FoodCalculator() {
               </p>
             </div>
 
-            <div className="px-6 py-7 text-center sm:px-8">
+            <div className="px-6 py-8 text-center sm:px-8">
               <p className="text-sm tracking-wide text-[var(--muted)]">
                 每 100 克热量
               </p>
               <p
-                className="mt-2 text-5xl font-semibold tracking-tight"
-                style={{
-                  fontFamily: "var(--font-display), serif",
-                  color: "var(--accent)",
-                }}
+                className="display mt-2 text-5xl font-semibold tracking-tight sm:text-6xl"
+                style={{ color: "var(--accent)" }}
               >
                 {textResult.caloriesPer100g}
                 <span className="ml-2 text-xl font-medium text-[var(--muted)]">
@@ -663,24 +626,19 @@ export default function FoodCalculator() {
             </div>
 
             <div className="border-t border-[var(--line)] px-6 py-6 sm:px-8">
-              <p
-                className="text-sm tracking-tight"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                份量计算
-              </p>
+              <p className="display text-sm tracking-tight">份量计算</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {COMMON_PORTIONS.map((preset) => (
                   <button
                     key={preset.label}
                     type="button"
                     onClick={() => setPortionGrams(preset.grams)}
-                    className="rounded-lg px-3 py-1.5 text-xs font-medium"
+                    className="rounded-full px-3 py-1.5 text-xs font-medium"
                     style={{
                       border: "1px solid var(--line)",
                       background:
                         portionGrams === preset.grams
-                          ? "rgba(47,107,79,0.12)"
+                          ? "var(--accent-soft)"
                           : "transparent",
                     }}
                   >
@@ -697,11 +655,11 @@ export default function FoodCalculator() {
                   onChange={(e) =>
                     setPortionGrams(Math.max(1, Number(e.target.value) || 1))
                   }
-                  className="w-28 rounded-xl border border-[var(--line)] bg-white/50 px-3 py-2 text-sm outline-none"
+                  className="field w-28"
                 />
                 <span className="text-sm text-[var(--muted)]">克</span>
                 <span
-                  className="ml-auto text-2xl font-semibold"
+                  className="display ml-auto text-2xl font-semibold"
                   style={{ color: "var(--accent)" }}
                 >
                   {portionCalories} kcal
@@ -719,20 +677,14 @@ export default function FoodCalculator() {
                     carbsPer100g: textResult.carbsPer100g,
                   })
                 }
-                className="mt-4 w-full rounded-xl px-4 py-3 text-sm font-semibold text-white"
-                style={{ background: "var(--accent-deep)" }}
+                className="btn-primary mt-4 w-full px-4 py-3 text-sm"
               >
                 加入今日饮食
               </button>
             </div>
 
             <div className="border-t border-[var(--line)] px-6 py-6 sm:px-8">
-              <h3
-                className="text-lg tracking-tight"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                饮食搭配建议
-              </h3>
+              <h3 className="display text-lg tracking-tight">饮食搭配建议</h3>
               <p className="mt-3 whitespace-pre-line text-[15px] leading-7 text-[var(--ink)]/90">
                 {textResult.advice}
               </p>
@@ -741,27 +693,15 @@ export default function FoodCalculator() {
         )}
 
         {imageResult && !loading && (
-          <div
-            className="animate-rise overflow-hidden rounded-2xl"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              boxShadow: "var(--shadow)",
-            }}
-          >
+          <div className="panel animate-rise overflow-hidden">
             <div className="border-b border-[var(--line)] px-6 py-6 sm:px-8">
               <p className="text-sm text-[var(--muted)]">图片识别结果</p>
-              <h2
-                className="mt-1 text-2xl tracking-tight"
-                style={{ fontFamily: "var(--font-display), serif" }}
-              >
-                食物列表
-              </h2>
+              <h2 className="display mt-1 text-2xl tracking-tight">食物列表</h2>
               <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                 {imageResult.summary}
               </p>
               <p
-                className="mt-4 text-3xl font-semibold"
+                className="display mt-4 text-3xl font-semibold"
                 style={{ color: "var(--accent)" }}
               >
                 {imageResult.foods.reduce((sum, food, index) => {
@@ -783,10 +723,7 @@ export default function FoodCalculator() {
                   <li key={`${food.name}-${index}`} className="px-6 py-5 sm:px-8">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p
-                          className="text-lg tracking-tight"
-                          style={{ fontFamily: "var(--font-display), serif" }}
-                        >
+                        <p className="display text-lg tracking-tight">
                           {food.name}
                         </p>
                         <p className="mt-1 text-xs text-[var(--muted)]">
@@ -825,7 +762,7 @@ export default function FoodCalculator() {
                               [index]: Math.max(1, Number(e.target.value) || 1),
                             }))
                           }
-                          className="w-20 rounded-lg border border-[var(--line)] bg-white/50 px-2 py-1.5 text-sm outline-none"
+                          className="field w-20 py-1.5"
                         />
                         g
                       </label>
@@ -841,8 +778,7 @@ export default function FoodCalculator() {
                             carbsPer100g: food.carbsPer100g,
                           })
                         }
-                        className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-                        style={{ background: "var(--accent-deep)" }}
+                        className="btn-primary px-3 py-1.5 text-xs"
                       >
                         加入今日饮食
                       </button>
@@ -856,10 +792,7 @@ export default function FoodCalculator() {
       </section>
 
       {toast && (
-        <div
-          className="animate-fade fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
-          style={{ background: "var(--accent-deep)" }}
-        >
+        <div className="btn-primary animate-fade fixed bottom-6 left-1/2 z-50 -translate-x-1/2 px-4 py-2 text-sm shadow-lg">
           {toast}
         </div>
       )}
@@ -868,15 +801,13 @@ export default function FoodCalculator() {
       </>
       )}
 
-      <footer className="mt-12 space-y-2 text-center text-xs text-[var(--muted)]">
+      <footer className="mt-14 space-y-2 text-center text-xs text-[var(--muted)]">
         <p>
           {user
-            ? "宏量营养素 · 份量计算 · 每日目标 · 饮食日记（SQLite 按账号区分）"
+            ? "宏量营养素 · 份量计算 · 每日目标 · 饮食日记"
             : "登录后可使用完整热量计算功能"}
         </p>
-        <p>
-          数据来源 USDA / AI 估算 · 图片识别通义千问 · 搭配建议 DeepSeek
-        </p>
+        <p>数据来源 USDA / AI · 识图通义千问 · 建议 DeepSeek</p>
       </footer>
     </div>
   );
@@ -898,11 +829,8 @@ function ModeButton({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="rounded-xl px-3 py-2.5 text-sm font-semibold transition disabled:opacity-50"
-      style={{
-        background: active ? "var(--accent-deep)" : "transparent",
-        color: active ? "#fff" : "var(--muted)",
-      }}
+      data-active={active}
+      className="tab-btn disabled:opacity-50"
     >
       {children}
     </button>
@@ -920,14 +848,7 @@ function Spinner() {
 
 function LoadingPanel({ text }: { text: string }) {
   return (
-    <div
-      className="animate-fade overflow-hidden rounded-2xl"
-      style={{
-        background: "var(--surface)",
-        border: "1px solid var(--line)",
-        boxShadow: "var(--shadow)",
-      }}
-    >
+    <div className="panel animate-fade overflow-hidden">
       <div className="flex items-center gap-3 border-b border-[var(--line)] px-6 py-5">
         <span
           className="animate-spin-slow inline-block h-5 w-5 rounded-full border-2 border-[var(--accent)]/25 border-t-[var(--accent)]"

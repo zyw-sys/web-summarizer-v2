@@ -18,13 +18,7 @@ export default function MealDiary({
 }: Props) {
   if (meals.length === 0) {
     return (
-      <section
-        className="rounded-2xl px-5 py-6 text-sm text-[var(--muted)]"
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--line)",
-        }}
-      >
+      <section className="panel-quiet px-5 py-6 text-sm text-[var(--muted)]">
         今日饮食日记为空。
         {loggedIn
           ? "查询食物后可「加入今日饮食」。"
@@ -34,30 +28,18 @@ export default function MealDiary({
   }
 
   return (
-    <section
-      className="overflow-hidden rounded-2xl"
-      style={{
-        background: "var(--surface)",
-        border: "1px solid var(--line)",
-        boxShadow: "var(--shadow)",
-      }}
-    >
+    <section className="panel overflow-hidden">
       <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-4">
         <div>
-          <h3
-            className="text-lg tracking-tight"
-            style={{ fontFamily: "var(--font-display), serif" }}
-          >
-            今日饮食
-          </h3>
+          <h3 className="display text-lg tracking-tight">今日饮食</h3>
           <p className="mt-0.5 text-xs text-[var(--muted)]">
-            {loggedIn ? "已同步到 SQLite 账号数据" : "本机临时数据"}
+            {loggedIn ? "已同步到账号" : "本机临时数据"}
           </p>
         </div>
         <button
           type="button"
           onClick={onClear}
-          className="text-xs font-semibold text-[var(--muted)]"
+          className="text-xs font-semibold text-[var(--muted)] transition hover:text-[var(--ink)]"
         >
           清空今日
         </button>
@@ -82,7 +64,7 @@ export default function MealDiary({
               <button
                 type="button"
                 onClick={() => onRemove(item.id)}
-                className="mt-1 text-xs text-[var(--muted)]"
+                className="mt-1 text-xs text-[var(--muted)] hover:text-[var(--ink)]"
               >
                 删除
               </button>

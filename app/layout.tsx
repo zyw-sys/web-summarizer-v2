@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Noto_Sans_SC, Noto_Serif_SC } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const notoSerif = Noto_Serif_SC({
+  variable: "--font-noto-serif",
   subsets: ["latin"],
+  weight: ["400", "600", "700"],
 });
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const notoSans = Noto_Sans_SC({
+  variable: "--font-noto-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${fraunces.variable} ${manrope.variable}`}>
+    <html
+      lang="zh-CN"
+      className={`${notoSerif.variable} ${notoSans.variable}`}
+    >
       <body className="min-h-full antialiased">{children}</body>
     </html>
   );
